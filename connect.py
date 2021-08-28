@@ -10,6 +10,10 @@ import contract
 from eth_account import Account
 
 
+def getSymmetricParameters(contract_instance,key):
+    return  contract_instance.functions.getSymmetricParameters().call({'from': Account.from_key(key).address, 'gas': 100000})
+
+
 def setValueOne(w3, contract_instance, address, value, key):
     tx = contract_instance.functions.setFirstSymmetricKey(value).buildTransaction({'from': Account.from_key(key).address,'nonce': w3.eth.getTransactionCount(address), 'gas':3000000})
     signed_tx = w3.eth.account.signTransaction(tx, key)
@@ -40,6 +44,11 @@ w3 = Web3(Web3.HTTPProvider('http://51.116.116.230:8545'))
 
 contract_instance = w3.eth.contract(address=contract.address, abi=contract.abi)
 
+parameters = getSymmetricParameters(contract_instance,keyProvider)
+
+g = parameters[0]
+p = parameters[1]
+
 #Set Value A
 setValueOne(w3,contract_instance,cloudProvider,123,keyProvider)
 
@@ -50,53 +59,48 @@ setValueOne(w3,contract_instance,cloudConsumer,456,keyConsumer)
 setValueOne(w3,contract_instance,cloudApplication,789,keyApplication)
 
 #Get Value for CloudProvider
-print(getValueOne(contract_instance,keyProvider))
+C = getValueOne(contract_instance,keyProvider)
 #Get Value for CloudConsumer
-print(getValueOne(contract_instance,keyConsumer))
+A = getValueOne(contract_instance,keyConsumer)
 #Get Value for CloudApplication
-print(getValueOne(contract_instance,keyApplication))
+B = getValueOne(contract_instance,keyApplication)
 
-#Set Value A
-setValueTwo(w3,contract_instance,cloudProvider,1111,keyProvider)
 
-#Set Value B
-setValueTwo(w3,contract_instance,cloudConsumer,2222,keyConsumer)
+a =  int(random.random() *100000)
+b =  int(random.random() *100000)
+c =  int(random.random() *100000)
 
-#Set Value C
-setValueTwo(w3,contract_instance,cloudApplication,3333,keyApplication)
+A = (g ** a) % p
+B = (g ** b) % p
+C = (g ** c) % p
+
+print(A)
+print(B)
+print(C)
+
+AB = A ** b % p
+BC = B ** c % p
+CA = C ** a % p
+
+#Set Value AB
+setValueTwo(w3,contract_instance,cloudConsumer,AB,keyConsumer)
+
+#Set Value BC
+setValueTwo(w3,contract_instance,cloudApplication,BC,keyApplication)
+
+#Set Value CA
+setValueTwo(w3,contract_instance,cloudProvider,CA,keyProvider)
 
 #Get Value for CloudProvider
-print(getValueTwo(contract_instance,keyProvider))
+BC = getValueTwo(contract_instance,keyProvider)
 #Get Value for CloudConsumer
-print(getValueTwo(contract_instance,keyConsumer))
+CA = getValueTwo(contract_instance,keyConsumer)
 #Get Value for CloudApplication
-print(getValueTwo(contract_instance,keyApplication))
+AB = getValueTwo(contract_instance,keyApplication)
 
-
-
-
-
-#a =  int(random.random() *100000)
-#b =  int(random.random() *100000)
-#c =  int(random.random() *100000)
-
-#A = (g ** a) % p
-#B = (g ** b) % p
-#C = (g ** c) % p
-
-#AB = A ** b % p
-#BC = B ** c % p
-#CA = C ** a % p
-
-
-
-#print(A)
-#print(B)
-#print(C)
-
-#print(AB ** c % p)
-#print(BC ** a % p)
-#print(CA ** b % p)
+print(AB ** c % p)
+print(BC ** a % p)
+print(CA ** b % p)
 
 
 
