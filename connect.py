@@ -1,13 +1,20 @@
 from abc import ABC
 from logging import basicConfig
+from Crypto.Random import get_random_bytes
 from eth_typing.encoding import HexStr
 from web3 import Web3
 from web3.auto import w3
 from eth_keys import keys
 from eth_account.messages import encode_defunct
 import random
+from Crypto.Cipher import AES
 import contract
 from eth_account import Account
+import json
+from base64 import b64decode, b64encode
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+
 
 
 def getSymmetricParameters(contract_instance,key):
@@ -98,14 +105,26 @@ CA = getValueTwo(contract_instance,keyConsumer)
 #Get Value for CloudApplication
 AB = getValueTwo(contract_instance,keyApplication)
 
-print(AB ** c % p)
-print(BC ** a % p)
-print(CA ** b % p)
+skey = AB ** c % p
+skey = skey.to_bytes(16,'big')
+header = b"header"
+data = b"This is a super top secret"
 
 
 
+cip = AES.new(skey, AES.MODE_GCM)
+cip.update(header)
 
-#print(w3.isConnected())
-#print(w3.eth.get_block(3))
+ciphertext, tag = cip.encrypt_and_digest(data)
+
+print(ciphertext)
+print(tag)
+
+
+decipher = AES.new(skey, AES.MODE_GCM, nonce=cip.nonce)
+decipher.update(header)
+plaintext = decipher.decrypt_and_verify(ciphertext,tag)
+print(plaintext)
+
 #print(w3.eth.get_block('latest'))
 
