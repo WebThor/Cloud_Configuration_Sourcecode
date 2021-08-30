@@ -14,8 +14,7 @@ import json
 from base64 import b64decode, b64encode
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
-
-
+import time
 
 def getSymmetricParameters(contract_instance,key):
     return  contract_instance.functions.getSymmetricParameters().call({'from': Account.from_key(key).address, 'gas': 100000})
@@ -37,6 +36,9 @@ def getValueOne(contract_instance,key):
 
 def getValueTwo(contract_instance,key):
     return  contract_instance.functions.getSecondSymmetricKey().call({'from': Account.from_key(key).address, 'gas': 100000})
+
+
+
 
 keyProvider = '0x09022e589dfd7c7bd451d4ff52b1b118f7e74f6fcd06cf091c00f847d82ba1f3'
 keyConsumer = '0x3f58a4fef9bf270172d70444b981af926a2e6802dfad2db4a78c526a9de709c5'
@@ -81,9 +83,7 @@ A = (g ** a) % p
 B = (g ** b) % p
 C = (g ** c) % p
 
-print(A)
-print(B)
-print(C)
+
 
 AB = A ** b % p
 BC = B ** c % p
@@ -104,6 +104,11 @@ BC = getValueTwo(contract_instance,keyProvider)
 CA = getValueTwo(contract_instance,keyConsumer)
 #Get Value for CloudApplication
 AB = getValueTwo(contract_instance,keyApplication)
+
+
+print(BC ** a % p)
+print(CA ** b % p)
+print(AB ** c % p)
 
 skey = AB ** c % p
 skey = skey.to_bytes(16,'big')
@@ -126,5 +131,15 @@ decipher.update(header)
 plaintext = decipher.decrypt_and_verify(ciphertext,tag)
 print(plaintext)
 
-#print(w3.eth.get_block('latest'))
+
+
+
+latestBlock = w3.eth.get_block('latest')
+while True:
+    print('Polling Blockchain')
+    currentBlock = w3.eth.get_block('latest')
+    # Polling Code   
+    time.sleep(10)
+            
+    
 
