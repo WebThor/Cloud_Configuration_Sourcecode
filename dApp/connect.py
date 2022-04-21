@@ -18,18 +18,22 @@ from Crypto.Util.Padding import unpad
 import time
 from dotenv import load_dotenv
 
+
+
+
+
 def getSymmetricParameters(contract_instance,key):
     return  contract_instance.functions.getSymmetricParameters().call({'from': Account.from_key(key).address, 'gas': 100000})
 
 
 def setValueOne(w3, contract_instance, address, value, key):
-    tx = contract_instance.functions.setFirstSymmetricKey(value).buildTransaction({'from': Account.from_key(key).address,'nonce': w3.eth.getTransactionCount(address), 'gas':3000000})
+    tx = contract_instance.functions.setFirstSymmetricKey(value).buildTransaction({'from': Account.from_key(key).address,'nonce': w3.eth.getTransactionCount(address), 'maxFeePerGas': 2000000000, 'maxPriorityFeePerGas': 1000000000})
     signed_tx = w3.eth.account.signTransaction(tx, key)
     w3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
 
 def setValueTwo(w3, contract_instance, address, value, key):  
-    tx = contract_instance.functions.setSecondSymmetricKey(value).buildTransaction({'from': Account.from_key(key).address,'nonce': w3.eth.getTransactionCount(address), 'gas':3000000})
+    tx = contract_instance.functions.setSecondSymmetricKey(value).buildTransaction({'from': Account.from_key(key).address,'nonce': w3.eth.getTransactionCount(address), 'maxFeePerGas': 2000000000, 'maxPriorityFeePerGas': 1000000000})
     signed_tx = w3.eth.account.signTransaction(tx, key)
     w3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
@@ -59,6 +63,8 @@ parameters = getSymmetricParameters(contract_instance,keyProvider)
 
 g = parameters[0]
 p = parameters[1]
+
+
 
 #Set Value A
 setValueOne(w3,contract_instance,cloudProvider,123,keyProvider)
