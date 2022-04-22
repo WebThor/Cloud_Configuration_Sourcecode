@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
+//AddressBook can be used to store multiple smart contracts on the Blockchain and to find them later
+import "./AddressBook.sol";
+
 contract Main {
 
+        //This is the main Smart Contract which must be deployed on the Ethereum Blockchain in order to work
       
       mapping(address => uint) private publicDiffieValues;
       bytes[] keys;
@@ -26,9 +30,11 @@ contract Main {
       string private t = '';
       
       string private h = '';
+
+      AddressBook private addressBook;
       
       
-  // This is the constructor which registers the public keys
+  // This is the constructor which registers the public keys and generates the Diffie Hellmann Key Exchange
     constructor(uint _g, uint _p){
         
         g=  _g;
@@ -40,7 +46,7 @@ contract Main {
         
     }
     
-
+    //Returns the Public Key based on a provided Key
     function getAddress(bytes memory key) private pure returns(address){
         bytes32 keyHash = keccak256(key);
         
@@ -54,13 +60,15 @@ contract Main {
     }
     
     
-
+    //Return the public Diffie Hellman values
     function getSymmetricParameters() public view returns(uint, uint){
      return (g,p);
         
     }
     
-     function setFirstSymmetricKey(uint _value) public{
+
+    //Used to create the first round of Diffie Hellman values 
+    function setFirstSymmetricKey(uint _value) public{
         if (msg.sender == cloudProvider){
             A = _value;
         }else if (msg.sender == cloudConsumer){
@@ -70,6 +78,7 @@ contract Main {
         }
     }
     
+    //Return the first round of Diffie Hellman values
     function getFirstSymmetricKey() public view returns (uint){
         if(msg.sender == cloudConsumer){
             return A;
@@ -82,7 +91,7 @@ contract Main {
         }
     }
     
-    
+    //Used to create the second round of Diffie Hellman values 
     function setSecondSymmetricKey(uint _value) public{
         if (msg.sender == cloudConsumer){
             AB = _value;
@@ -93,6 +102,7 @@ contract Main {
         }
     }
     
+    //Return the second round of Diffie Hellman values
     function getSecondSymmetricKey() public view returns (uint){
         if(msg.sender == cloudConsumer){
             return CA;
@@ -105,7 +115,7 @@ contract Main {
         }
     }
     
-
+    //Blockchain function used to store a configuration on the deployed smart contract. c is the encripted configuration, t is the authentication tag
     function setConfiguration(string memory _c, string memory _t)public payable{
         if(msg.sender == cloudProvider || msg.sender == cloudConsumer){
             c = _c;
@@ -113,6 +123,7 @@ contract Main {
         }
     }
     
+    //Returns the stored encrypted application configuration 
     function getConfiguration()public view returns(string memory _c,string memory _t){
         if(msg.sender == cloudProvider || msg.sender == cloudConsumer || msg.sender == cloudApplication){
           _c = c;
@@ -122,12 +133,16 @@ contract Main {
         
     }
     
+
+    //Stores either the hash value of a created backup, or 0 to the smart contract. This function is used to store the configuration status in the smart contract
     function setStatus(string memory _h) public{
         if(msg.sender == cloudApplication){
             h = _h;
         }
     }
     
+
+    //This function returns the currently stored status from the smart contract
     function getStatus()public view returns(string memory _h){
         if(msg.sender == cloudProvider || msg.sender == cloudConsumer){
           _h = h;
