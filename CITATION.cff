@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: Blockchain-based Cloud Configuration Scrips
+message: 'If you use this software, please cite it as below.'
+type: software
+authors:
+  - given-names: Thorsten
+    family-names: Weber
+    affiliation: UCAM Spain
+  - given-names: Rüdiger
+    family-names: Buchkremer
+    affiliation: FOM ifid Institut
