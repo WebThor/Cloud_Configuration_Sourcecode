@@ -1,1 +1,3 @@
 web3
+azure-mgmt
+python-dotenv
