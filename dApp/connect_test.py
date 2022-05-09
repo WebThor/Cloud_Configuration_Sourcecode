@@ -65,6 +65,83 @@ g = parameters[0]
 p = parameters[1]
 
 
+
+#Set Value A
+setValueOne(w3,contract_instance,cloudProvider,123,keyProvider)
+
+#Set Value B
+setValueOne(w3,contract_instance,cloudConsumer,456,keyConsumer)
+
+#Set Value C
+setValueOne(w3,contract_instance,cloudApplication,789,keyApplication)
+
+#Get Value for CloudProvider
+C = getValueOne(contract_instance,keyProvider)
+#Get Value for CloudConsumer
+A = getValueOne(contract_instance,keyConsumer)
+#Get Value for CloudApplication
+B = getValueOne(contract_instance,keyApplication)
+
+
+a =  int(random.random() *100000)
+b =  int(random.random() *100000)
+c =  int(random.random() *100000)
+
+A = (g ** a) % p
+B = (g ** b) % p
+C = (g ** c) % p
+
+
+
+AB = A ** b % p
+BC = B ** c % p
+CA = C ** a % p
+
+#Set Value AB
+setValueTwo(w3,contract_instance,cloudConsumer,AB,keyConsumer)
+
+#Set Value BC
+setValueTwo(w3,contract_instance,cloudApplication,BC,keyApplication)
+
+#Set Value CA
+setValueTwo(w3,contract_instance,cloudProvider,CA,keyProvider)
+
+#Get Value for CloudProvider
+BC = getValueTwo(contract_instance,keyProvider)
+#Get Value for CloudConsumer
+CA = getValueTwo(contract_instance,keyConsumer)
+#Get Value for CloudApplication
+AB = getValueTwo(contract_instance,keyApplication)
+
+
+print(BC ** a % p)
+print(CA ** b % p)
+print(AB ** c % p)
+
+skey = AB ** c % p
+skey = skey.to_bytes(16,'big')
+header = b"header"
+data = b"This is a super top secret"
+
+
+
+cip = AES.new(skey, AES.MODE_GCM)
+cip.update(header)
+
+ciphertext, tag = cip.encrypt_and_digest(data)
+
+print(ciphertext)
+print(tag)
+
+
+decipher = AES.new(skey, AES.MODE_GCM, nonce=cip.nonce)
+decipher.update(header)
+plaintext = decipher.decrypt_and_verify(ciphertext,tag)
+print(plaintext)
+
+
+
+
 latestBlock = w3.eth.get_block('latest')
 while True:
     print('Polling Blockchain')
