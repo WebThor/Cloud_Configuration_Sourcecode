@@ -45,13 +45,14 @@ while True:
         latestBlock = currentBlock
         parameters = blockchainFunctions.getSymmetricParameters(contract_instance,keyConsumer)
         currentParameters = hashlib.sha1(parameters).hexdigest()
+
+        configuration = blockchainFunctions.getConfiguration(contract_instance,keyConsumer)
+        currentConfiguration = hashlib.sha1(configuration).hexdigest()
+
         #First Communication Flow
-        if latestParameters != currentParameters:
-            latestParameters = currentParameters
-            skey= consumerManagementScript.keyManagementFlow(w3, contract_instance,cloudConsumer,keyConsumer,parameters[0],parameters[1])
-        
-        #Second Communication Flow
-        if latestConfiguration
+    if latestParameters != currentParameters:
+        latestParameters = currentParameters
+        skey= consumerManagementScript.keyManagementFlow(w3, contract_instance,cloudConsumer,keyConsumer,parameters[0],parameters[1])      
 
 
     time.sleep(1000)
