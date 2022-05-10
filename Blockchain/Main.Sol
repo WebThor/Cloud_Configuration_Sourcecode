@@ -2,7 +2,6 @@
 pragma solidity ^0.8.7;
 
 //AddressBook can be used to store multiple smart contracts on the Blockchain and to find them later
-import "./AddressBook.sol";
 
 contract Main {
 
@@ -31,7 +30,6 @@ contract Main {
       
       string private h = '';
 
-      AddressBook private addressBook;
       
       
   // This is the constructor which registers the public keys and generates the Diffie Hellmann Key Exchange
